@@ -2,6 +2,8 @@
 #include <iostream>
 #include <map>
 #include <vector>
+#include <tuple>
+#include <sstream>
 
 #include "utils.h"
 using namespace std;
@@ -19,21 +21,28 @@ int main(int argc, char* argv[]) {
     int capacity = atoi(argv[2]);     // Get the capacity of the vehicle
 
     int num_nodes;
-    std::map<int, int> demands;
-    std::vector<Edge> edges;
+    vector<Edge> edges;
+    map<int, int> demands;
 
     // Read and parse the input file
     read_vrp_input(input_filepath, num_nodes, demands, edges);
 
-    // Print the parsed data
-    std::cout << "Number of nodes: " << num_nodes << std::endl;
-    std::cout << "Demands:" << std::endl;
-    for (const auto& demand : demands) {
-        std::cout << "Node " << demand.first << ": " << demand.second << std::endl;
+    num_nodes = demands.size() + 1;
+    cout << "Number of edges: " << edges.size() << endl;
+    cout << "Number of nodes: " << num_nodes << endl;
+
+    vector<vector<int>> matrix(num_nodes);
+
+    // Fill the spaces of the matrix with -1
+    for (int i = 0; i < matrix.size(); i++) {
+        matrix[i].resize(matrix.size(), -1);
     }
-    std::cout << "Edges:" << std::endl;
-    for (const auto& edge : edges) {
-        std::cout << "From " << edge.from << " to " << edge.to << " with weight " << edge.weight << std::endl;
+
+    for (auto edge : edges) {
+        int u = edge.from;
+        int v = edge.to;
+        int w = edge.weight;
+        matrix[u][v] = w;
     }
 
     return 0;
