@@ -1,6 +1,9 @@
 # Vehicle Routing Problem (VRP)
 
-Autor: Enricco Gemha
+Author: Enricco Gemha
 
-## Instruções de uso
+## How to run the project
 
+```bash
+./<executable_name> <input_filepath> <capacity>
+```
