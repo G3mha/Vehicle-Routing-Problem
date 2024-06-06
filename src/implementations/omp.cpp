@@ -5,8 +5,10 @@
 #include <vector>
 #include <tuple>
 #include <sstream>
-
+#include <climits>
+#include <omp.h>
 #include "utils.h"
+
 using namespace std;
 
 int main(int argc, char* argv[]) {
@@ -67,7 +69,9 @@ int main(int argc, char* argv[]) {
 
     // Get all valid routes
     vector<vector<int>> valid_routes;
-    for (const auto& path : routes) {
+    #pragma omp parallel for shared(routes, valid_routes, matrix, demands, capacity)
+    for (int i = 0; i < routes.size(); ++i) {
+        const auto& path = routes[i];
         vector<int> new_path;
         new_path.push_back(0);  // Start with depot (0)
         int total_capacity_used = 0;
@@ -80,8 +84,6 @@ int main(int argc, char* argv[]) {
             if (matrix[node][next_node] != -1 && total_capacity_used + demands[next_node] <= capacity) {
                 new_path.push_back(next_node);              // Add next_node
                 total_capacity_used += demands[next_node];  // Update capacity
-            
-            // If the capacity is exceeded, return to depot
             } else {
                 if (new_path.back() != 0) {  // Prevent consecutive zeros
                     new_path.push_back(0);   // Return to depot to reset capacity
@@ -99,25 +101,42 @@ int main(int argc, char* argv[]) {
             new_path.push_back(0);   // Return to depot
         }
 
+        #pragma omp critical
         valid_routes.push_back(new_path);  // Store the valid route
     }
 
     // Get the best route
     int best_cost = INT_MAX;  // INT_MAX is the maximum value for an int
     vector<int> best_route;
-    for (const auto& route : valid_routes) {
-        int cost = 0;
-        for (size_t i = 0; i < route.size() - 1; ++i) {  // Iterate over the route
-            cost += matrix[route[i]][route[i + 1]];      // Calculate the cost of the route
+
+    #pragma omp parallel
+    {
+        int local_best_cost = INT_MAX;
+        vector<int> local_best_route;
+
+        #pragma omp for nowait
+        for (int i = 0; i < valid_routes.size(); ++i) {
+            const auto& route = valid_routes[i];
+            int cost = 0;
+            for (size_t j = 0; j < route.size() - 1; ++j) {  // Iterate over the route
+                cost += matrix[route[j]][route[j + 1]];      // Calculate the cost of the route
+            }
+
+            // Update the best route
+            if (cost < local_best_cost) {
+                local_best_cost = cost;
+                local_best_route = route;
+            }
         }
 
-        // Update the best route
-        if (cost < best_cost) {
-            best_cost = cost;
-            best_route = route;
+        #pragma omp critical
+        {
+            if (local_best_cost < best_cost) {
+                best_cost = local_best_cost;
+                best_route = local_best_route;
+            }
         }
     }
-
 
     // Print the best route
     cout << "Best route: ";
