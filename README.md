@@ -4,13 +4,17 @@ Author: Enricco Gemha
 
 ## How to run the project
 
-First, compile each file inside implementations:
+*The commands below target the architecture of MacOS, which I use. Some tweaks might be necessary to run in other OSs.*
+
+First, compile each file inside implementations.
 
 ```bash
 g++ -std=c++11 -o global_search global_search.cpp utils.cpp
+g++ -std=c++11 -o nearest_neighbor nearest_neighbor.cpp utils.cpp
+clang++ -fopenmp -std=c++11 -I/opt/homebrew/opt/libomp/include -L/opt/homebrew/opt/libomp/lib -o omp omp.cpp utils.cpp
 ```
 
-Then, execute it
+Then, execute them.
 
 ```bash
 ./<executable_name> <input_filepath> <capacity>
