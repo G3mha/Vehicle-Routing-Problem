@@ -2,25 +2,7 @@
 
 Author: Enricco Gemha
 
-## How to run the project
-
-*The commands below target the architecture of MacOS, which I use. Some tweaks might be necessary to run in other OSs.*
-
-First, compile each file inside implementations.
-
-```bash
-g++ -std=c++11 -o global_search global_search.cpp utils.cpp
-
-g++ -std=c++11 -o nearest_neighbor nearest_neighbor.cpp utils.cpp
-
-/opt/homebrew/opt/llvm/bin/clang++ -fopenmp -std=c++11 -I/opt/homebrew/opt/libomp/include -L/opt/homebrew/opt/libomp/lib -o omp omp.cpp utils.cppopt/libomp/lib -o omp omp.cpp utils.cpp
-```
-
-Then, execute them.
-
-```bash
-./<executable_name> <input_filepath> <capacity>
-```
+**Go to `main.ipynb` file to run this project**
 
 ## Approaches to the problem
 
